@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "roottrace_apm"
-version = "0.4.4"
+version = "0.4.5"
 description = "RootTrace APM agent for Python: transactions, spans, error capture, outbound HTTP monitoring, and custom metrics with zero dependencies."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -28,10 +28,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SteveMB1/roottrace-apm-python"
-Repository = "https://github.com/SteveMB1/roottrace-apm-python"
-Issues = "https://github.com/SteveMB1/roottrace-apm-python/issues"
-Changelog = "https://github.com/SteveMB1/roottrace-apm-python/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/byteaffinity/roottrace-apm-python"
+Repository = "https://github.com/byteaffinity/roottrace-apm-python"
+Issues = "https://github.com/byteaffinity/roottrace-apm-python/issues"
+Changelog = "https://github.com/byteaffinity/roottrace-apm-python/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]

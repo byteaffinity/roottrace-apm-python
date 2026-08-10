@@ -1,7 +1,7 @@
 # roottrace_apm
 
 [![PyPI](https://img.shields.io/pypi/v/roottrace-apm)](https://pypi.org/project/roottrace-apm/)
-[![CI](https://github.com/SteveMB1/roottrace-apm-python/actions/workflows/ci.yml/badge.svg)](https://github.com/SteveMB1/roottrace-apm-python/actions/workflows/ci.yml)
+[![CI](https://github.com/byteaffinity/roottrace-apm-python/actions/workflows/ci.yml/badge.svg)](https://github.com/byteaffinity/roottrace-apm-python/actions/workflows/ci.yml)
 
 RootTrace APM agent for Python. Aggregates counters, gauges, timers,
 transactions, spans, and errors in memory and posts one payload per flush
@@ -395,10 +395,27 @@ delay; see [above](#event-loop-and-scheduling-lag)). All of them, and the
 `runtime_metrics=False`. `python.eventloop.lag_ms` is reported only once
 the event-loop monitor is running.
 
+## Naming your service
+
+Plans cap how many distinct APM services a workspace may have, alongside the
+host cap, and `service` is the name that count is taken from.
+
+- Every replica of one deployment must pass the **same** `service`. It is the
+  logical service, not the instance. Appending a pod name or a hostname turns
+  one service into as many services as you have replicas.
+- The same `service` in staging and in production counts once, so environment
+  belongs in the collector token's environment, not in the name.
+
+A service counts while it is reporting and stops counting seven days after its
+last flush, so a decommissioned service releases its slot on its own. Ingest
+from a service that is already reporting is never refused. A workspace at its
+cap refuses only the first flush from a new service name, with HTTP 402 and
+`"limit_type": "services"` in the body.
+
 ## Development
 
 ```
-git clone https://github.com/SteveMB1/roottrace-apm-python
+git clone https://github.com/byteaffinity/roottrace-apm-python
 cd roottrace-apm-python
 python3 -m unittest discover     # tests (no install needed)
 python3 -m ruff check .          # lint

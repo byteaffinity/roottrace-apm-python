@@ -36,7 +36,7 @@ try:
 except ImportError:  # not available on Windows
     resource = None
 
-VERSION = "0.4.4"
+VERSION = "0.4.5"
 DEFAULT_API_URL = "https://api.roottrace.io/api"
 MAX_ENTRIES = 500  # wire cap per ingest request
 MAX_USER_ENTRIES = MAX_ENTRIES - 8  # headroom so runtime metrics fit under the cap

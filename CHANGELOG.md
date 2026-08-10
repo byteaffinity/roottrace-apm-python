@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.5 - 2026-08-09
+
+- **Metadata only: the repository moved to the `byteaffinity` organization.**
+  Every project URL on PyPI still pointed at the previous owner. A published
+  version's metadata cannot be edited, so correcting a link costs a release.
+  No behaviour changed; 0.4.5 is 0.4.4 with the URLs corrected.
+
 ## 0.4.4 - 2026-08-05
 
 - **Fixed: the wrapper reported itself as 0.4.2 for the whole of 0.4.3.** The
@@ -16,7 +23,7 @@
 ## 0.4.3 - 2026-07-31
 
 - **Security sinks.** The wrapper now reports when instrumented code reaches a
-  call site an attacker needs — spawning a process, or `pickle.loads` — to
+  call site an attacker needs (spawning a process, or `pickle.loads`) to
   `POST /apm/security-events`. Because it fires inside a transaction the report
   carries the request that caused it: trace id, endpoint, and method, with the
   client address resolved server-side from the connection rather than trusted
@@ -37,28 +44,28 @@
 
 - **Fixed: `upload_interval_seconds` did nothing.** The server sends it, the
   RootTrace UI offers it as a control between 15 and 900 seconds, and this SDK
-  clamped it on arrival and then never read it — profiles were drained on the
+  clamped it on arrival and then never read it: profiles were drained on the
   metric flush cadence instead. That is 30 seconds by default and can be set to
   5 via `ROOTTRACE_APM_INTERVAL_SECONDS`, so a service could upload twelve
   slivers where the configured window asked for one profile. The Go and Java
   SDKs already gated on this; Python and Node did not. Uploads now happen once
   per configured interval, timed from when the profiler started so the first
-  one covers a whole window. Flamegraphs were never wrong — the server merges
-  everything into five-minute buckets regardless — but the setting was a lie
+  one covers a whole window. Flamegraphs were never wrong, the server merges
+  everything into five-minute buckets regardless, but the setting was a lie
   and the upload count was several times what was asked for.
 
 ## 0.4.1 - 2026-07-30
 
 - **Fixed: profiling did not start for the first minute of a host's uptime.**
   The "has the poll interval elapsed" guard compared `time.monotonic()` against
-  an initial `0.0`, but `time.monotonic()` is uptime on Linux — so a process
+  an initial `0.0`, but `time.monotonic()` is uptime on Linux, so a process
   starting in a freshly booted container read a clock still in single digits
   and skipped its first config fetch until the *host* passed 60 seconds.
   Long-lived hosts were unaffected, which is exactly why it survived local
   testing and only surfaced on CI runners. The initial value is now `-inf`, so
   "never fetched" always counts as due.
 - Lint: the ruff rule set is now selected explicitly in `pyproject.toml` and
-  the version is pinned in CI. Ruff's defaults are not a stable contract —
+  the version is pinned in CI. Ruff's defaults are not a stable contract,
   0.16 widened them, which failed the build on 41 findings in code nobody had
   touched.
 
@@ -71,7 +78,7 @@
   - **Wall-clock, across every thread, and labelled as such.** A daemon thread
     reads `sys._current_frames()` at the configured rate. True CPU sampling in
     CPython means `setitimer(ITIMER_PROF)`, whose signal only ever reaches the
-    main thread — useless in a threaded web server — so the honest measurement
+    main thread (useless in a threaded web server), so the honest measurement
     is the one taken. Nothing calls it CPU.
   - **Fails closed.** If the config cannot be fetched, profiling does not
     start; a running profiler keeps its current settings rather than being
@@ -84,7 +91,7 @@
     late; at the nominal period every duration would be understated by exactly
     the fraction of ticks that were missed.
   - Overhead is measured and reported on each upload, including the sampling
-    itself. Profiles are dropped rather than retried on upload failure — they
+    itself. Profiles are dropped rather than retried on upload failure: they
     are large and statistical, and a retry queue inside a customer process is
     the worse outcome.
   - Frames are `module.function`, deliberately without line numbers, so a
@@ -102,7 +109,7 @@
 ## 0.3.1 - 2026-07-21
 
 - `RootTraceLogHandler` now includes the formatted traceback in the shipped
-  message when a record carries `exc_info` — so `logging.exception(...)`
+  message when a record carries `exc_info`, so `logging.exception(...)`
   ships what it prints, inside the same 8KB message cap. Previously the
   traceback was silently dropped and an error log arrived as its first line
   only.
@@ -110,7 +117,7 @@
 ## 0.3.0 - 2026-07-15
 
 - Latency histograms: every timer metric and transaction group now carries
-  an optional `buckets` object — a log2 histogram (4 buckets per octave,
+  an optional `buckets` object, a log2 histogram (4 buckets per octave,
   index `min(127, max(0, floor(log2(max(d, 0.001)) * 4) + 40))`, so 1ms is
   bucket 40 and 1000ms is bucket 79) of the durations since the last flush,
   so the dashboard can compute real percentiles instead of inferring them
@@ -128,7 +135,7 @@
   by `AsgiMiddleware`, or manually with `apm.watch_event_loop()`.
 - `process.gil.lag_ms` gauge: mean oversleep of a 100ms daemon sampler
   thread. This measures thread scheduling delay, of which GIL contention is
-  the dominant cause in CPython — not a direct GIL instrumentation. Rides
+  the dominant cause in CPython, not a direct GIL instrumentation. Rides
   `runtime_metrics`.
 - `RootTraceLogHandler`: a stdlib `logging.Handler` batching records
   (service, level, message, logger, timestamp, active `trace_id`, and
@@ -145,7 +152,7 @@
 
 - Automatic database spans (`db_instrumentation=True`, the default):
   MongoDB via a pymongo command listener (motor supported through executor
-  context propagation — call `init()` before creating the client),
+  context propagation, call `init()` before creating the client),
   Elasticsearch `perform_request`, redis-py (sync and asyncio), asyncpg,
   and SQLAlchemy engine events. Spans are named by operation and target
   (`find app.users`, `SELECT users`, `GET`), never by payload.
